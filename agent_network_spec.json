@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Open Agentic Web Protocol Specification",
+  "version": "1.0.0",
+  "description": "Standardized protocol schema for autonomous agent discovery, capabilities negotiation, verifiable micro-contracts, and multi-agent settlement.",
+  "type": "object",
+  "required": [
+    "protocol_version",
+    "network_id",
+    "agent_manifest",
+    "capabilities",
+    "negotiation_rules",
+    "settlement_rail"
+  ],
+  "properties": {
+    "protocol_version": {
+      "type": "string",
+      "enum": ["OAW-1.0.0"]
+    },
+    "network_id": {
+      "type": "string",
+      "pattern": "^oaw:[a-z0-9_-]+$"
+    },
+    "agent_manifest": {
+      "type": "object",
+      "required": ["agent_id", "public_key", "endpoint_url", "reputation_score"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "public_key": { "type": "string" },
+        "endpoint_url": { "type": "string", "format": "uri" },
+        "reputation_score": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["skill_id", "version", "pricing_model", "sla_latency_ms"],
+        "properties": {
+          "skill_id": { "type": "string" },
+          "version": { "type": "string" },
+          "pricing_model": {
+            "type": "object",
+            "required": ["currency", "base_price_micro_units", "unit_metric"],
+            "properties": {
+              "currency": { "type": "string" },
+              "base_price_micro_units": { "type": "integer" },
+              "unit_metric": { "type": "string" }
+            }
+          },
+          "sla_latency_ms": { "type": "integer" }
+        }
+      }
+    },
+    "negotiation_rules": {
+      "type": "object",
+      "required": ["max_rounds", "timeout_seconds", "arbitration_mode"],
+      "properties": {
+        "max_rounds": { "type": "integer", "default": 3 },
+        "timeout_seconds": { "type": "integer", "default": 30 },
+        "arbitration_mode": { "type": "string", "enum": ["CRYPTOGRAPHIC_QUORUM", "SKEPTIC_DISPUTE"] }
+      }
+    },
+    "settlement_rail": {
+      "type": "object",
+      "required": ["escrow_enabled", "verification_method"],
+      "properties": {
+        "escrow_enabled": { "type": "boolean" },
+        "verification_method": { "type": "string", "enum": ["SHA256_HASH_CHAIN", "ZK_PROOF", "REVENUE_RATIO"] }
+      }
+    }
+  }
+}
